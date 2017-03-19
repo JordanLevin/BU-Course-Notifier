@@ -1,0 +1,66 @@
+<script>
+    $(document).ready(function () {
+        //delete class
+        $('#classList table tbody').on('click', 'td button.deleteClass', deleteClass);
+    });
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <form action="/addclass" method="post">
+                <input name="name" type="text" class = "form-control" placeholder="Enter class name"></input>
+                <br>
+                <input name="crn" type="text" class = "form-control" placeholder="Enter class CRN"></input>
+                <br>
+                <input name="number" type="text" class = "form-control" placeholder="Enter class number"></input>
+                <br>
+                <input name="department" type="text" class = "form-control" placeholder="Enter class department"></input>
+                <br>
+                <button type="submit" id="btnAddClass" class="form-control">Submit</button>
+            </form>
+        </div>
+        <div class="col-md-6 jumbotron img-rounded">
+            <h2> Classes being monitored </h2>
+            <div id="classList">
+                <table class="table">
+                    <tbody>
+                        {{#each user.classes}}
+                            <tr>
+                                <td>{{this.name}}</td>
+                                <td>{{this.spots}}</td>
+                                <td><button class = "deleteClass btn btn-primary" rel="{{this._id}}">X</button></td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Delete class
+    function deleteClass(event) {
+
+        event.preventDefault();
+        //delete
+        $.ajax({
+            type: 'DELETE',
+            url: '/deleteClass/' + $(this).attr('rel')
+        }).done(function (response) {
+            if (response) {
+                console.log(response);
+            }
+            else {
+                location.reload(true);
+            }
+
+            // Update the table
+            //populateClasses();
+
+        });
+
+
+    };
+</script>
