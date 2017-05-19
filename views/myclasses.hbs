@@ -5,36 +5,29 @@
     });
 </script>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <form action="/addclass" method="post">
-                <input name="name" type="text" class = "form-control" placeholder="Enter class name"></input>
-                <br>
-                <input name="crn" type="text" class = "form-control" placeholder="Enter class CRN"></input>
-                <br>
-                <input name="number" type="text" class = "form-control" placeholder="Enter class number"></input>
-                <br>
-                <input name="department" type="text" class = "form-control" placeholder="Enter class department"></input>
-                <br>
-                <button type="submit" id="btnAddClass" class="form-control">Submit</button>
-            </form>
-        </div>
-        <div class="col-md-6 jumbotron img-rounded">
-            <h2> Classes being monitored </h2>
-            <div id="classList">
-                <table class="table">
-                    <tbody>
-                        {{#each user.classes}}
-                            <tr>
-                                <td>{{this.name}}</td>
-                                <td>{{this.spots}}</td>
-                                <td><button class = "deleteClass btn btn-primary" rel="{{this._id}}">X</button></td>
-                            </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
-            </div>
+<div class="ui grid">
+    <div class="six wide left floated column" style="padding: 5em 5em 5em 10em;">
+        <h2> Enter a class name and crn </h2>
+        <form class = "ui large form "action="/addclass" method="post">
+            <input name="name" type="text" style = "margin-bottom:2em" placeholder="Enter class name"></input>
+            <input name="crn" type="text" style = "margin-bottom:1em" placeholder="Enter class CRN"></input>
+            <button type="submit" id="btnAddClass" class="ui button">Submit</button>
+        </form>
+    </div>
+    <div class="six wide left floated column" style="padding: 5em 5em 5em 5em;">
+        <h2> Classes being monitored </h2>
+        <div id="classList">
+            <table class="ui celled table" style="padding-right: 1em">
+                <tbody>
+                    {{#each user.classes}}
+                        <tr>
+                            <td>{{this.name}}</td>
+                            <td>{{this.spots}}</td>
+                            <td class="ui collapsing"><button class = "deleteClass ui button" rel="{{this._id}}">X</button></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -44,7 +37,6 @@
     function deleteClass(event) {
 
         event.preventDefault();
-        //delete
         $.ajax({
             type: 'DELETE',
             url: '/deleteClass/' + $(this).attr('rel')

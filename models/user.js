@@ -3,8 +3,6 @@ var mongoose = require('mongoose');
 var classesSchema = new mongoose.Schema({
     crn: String,
     name: String,
-    number: String,
-    department: String,
     spots: Number
 
 });
@@ -16,7 +14,7 @@ var userSchema = new mongoose.Schema({
     username: String,
     password: String,
     notifications: Boolean,
-    classes : [classesSchema]
+    classes : [classesSchema],
 
 });
 

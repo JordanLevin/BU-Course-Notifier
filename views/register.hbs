@@ -1,4 +1,4 @@
-<div class = "container">
+<!--<div class = "container">
     <div class = "row">
         <div class = "col-sm-6 col-md-4 col-md-offset-4">
             <h1 class="text-center login-title">Registration Details</h1>
@@ -14,5 +14,136 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>-->
+
+<script src="/semantic/dist/components/form.js"></script>
+<script src="/semantic/dist/components/transition.js"></script>
+
+<style type="text/css">
+    body {
+        background-color: #DADADA;
+    }
+    body > .grid {
+        height: 100%;
+    }
+    .image {
+        margin-top: -100px;
+    }
+    .column {
+        max-width: 450px;
+    }
+</style>
+<script>
+    $(document)
+            .ready(function() {
+                $('.ui.form')
+                        .form({
+                            fields: {
+                                username: {
+                                    identifier  : 'username',
+                                    rules: [
+                                        {
+                                            type   : 'empty',
+                                            prompt : 'Please enter your username'
+                                        }
+                                    ]
+                                },
+                                password: {
+                                    identifier  : 'password',
+                                    rules: [
+                                        {
+                                            type   : 'empty',
+                                            prompt : 'Please enter your password'
+                                        },
+                                        {
+                                            type   : 'length[4]',
+                                            prompt : 'Your password must be at least 4 characters'
+                                        }
+                                    ]
+                                },
+                                email: {
+                                    identifier  : 'email',
+                                    rules: [
+                                        {
+                                            type   : 'empty',
+                                            prompt : 'Please enter your email'
+                                        },
+                                        {
+                                            type: 'email'
+                                            prompt: 'Invalid email'
+                                        }
+                                    ]
+                                },
+                                firstName: {
+                                    identifier: 'firstName',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: 'Please enter first name'
+                                        }
+                                    ]
+                                },
+                                lastName: {
+                                    identifier: 'lastName',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: 'Please enter last name'
+                                        }
+                                    ]
+                                }
+
+
+                            }
+                        })
+                ;
+            })
+    ;
+</script>
+
+<div class="ui middle aligned center aligned grid">
+    <div class="column">
+        <h2 class="ui teal image header">
+            <div class="content">
+                Sign up for an account
+            </div>
+        </h2>
+        <form class="ui large form" action="/signup" method="POST">
+            <div class="ui stacked segment">
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" placeholder="Username">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <input type="text" name="email" placeholder="Email">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <input type="text" name="firstName" placeholder="First Name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <input type="text" name="lastName" placeholder="Last Name">
+                    </div>
+                </div>
+                <button class="ui fluid large teal submit button" type="submit">Sign Up</button>
+            </div>
+
+            <div class="ui error message"></div>
+
+        </form>
+
     </div>
 </div>

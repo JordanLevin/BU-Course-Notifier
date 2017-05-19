@@ -9,8 +9,9 @@ var connect = require('connect');
 //use flash to display messages
 var flash = require('connect-flash');
 var bCrypt = require('bcrypt-nodejs');
-
-
+var request = require('request');
+var async = require('async');
+var nodemailer = require('nodemailer');
 
 var app = express();
 
@@ -34,7 +35,6 @@ app.use(flash());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 var mongoose = require('mongoose');
 var opts = {
     server: {
@@ -47,7 +47,7 @@ var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-    // we're connected!
+    //connected
 });
 
 var User = require('./models/user.js').User;
@@ -173,7 +173,7 @@ app.get('/signin', function(req, res){
 app.get('/', function(req, res) {
     // Display the Login page with any flash message, if any
     if(!req.user)
-        res.render('homepage', { title: "Home", user: req.user });
+        res.render('index', { title: "BU Class Notifier", user: req.user });
     else
         res.redirect('/myclasses');
 });
@@ -208,56 +208,105 @@ app.get('/home', isAuthenticated, function(req, res){
 });
 
 
+//test stuff for checking classes --------------------------------------------------------------------------------------
 app.get('/myclasses', isAuthenticated, function(req, res){
-    res.render('myclasses', {user: req.user});
+    check = [];
+    req.user.classes.forEach(function(c){
+        check.push(function(callback) {
+            var results = [];
+            request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + c.crn, function (error, response, body) {
+                var re = new RegExp('dddefault">\\d+', 'g');
+                var nums = new RegExp('\\d\\d');
+                var xArray;
+                var first = true;
+                while(xArray = re.exec(body)) {
+                    var test = xArray.toString().split(",")[0].split(">")[1];
+                    if(!first)
+                        results.push(test);
+                    first = false;
+                }
+                callback(null, results);
+            });
+        });
+    });
+    async.parallel(check, function(err, results){
+        var i = 0;
+        req.user.classes.forEach(function(c){
+            c.spots = results[i][0];
+            //console.log(results[i][0]);
+            i++;
+        });
+        res.render('myclasses', {user: req.user});
+    });
+
+
 });
+//test stuff for checking classes --------------------------------------------------------------------------------------
+
+function updateNumbers(){
+
+}
+
+function notifyUsers(){
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'webstuff987@gmail.com', // Your email id
+            pass: 'passwordrequirementssuck' // Your password
+        }
+    });
+}
+
+
 
 app.post('/addclass', function(req, res){
-    var newClass = new Class();
-    console.log(req.body);
-    newClass.crn = req.body.crn;
-    newClass.number = req.body.number;
-    newClass.name = req.body.name;
-    newClass.department = req.body.department;
-    newClass.spots = 0;
-    //console.log(newClass);
-    req.user.classes.push(newClass);
-    req.user.save(function(err){
-        if(err)
-            console.log(err);
-        else
-            console.log("saving user to db");
+    valid = true;
+    request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + req.body.crn, function (error, response, body) {
+        var re = new RegExp('No detailed class information found');
+        if(re.exec(body)){
+            valid = false;
+        }
+        if(!valid){
+            //invalid crn entered. notify user here later
+            return res.redirect('/myclasses');
+        }
+        var newClass = new Class();
+        console.log(req.body);
+        newClass.crn = req.body.crn;
+        newClass.name = req.body.name;
+        newClass.spots = 0;
+        req.user.classes.push(newClass);
+        req.user.save(function(err){
+            if(err)
+                console.log(err);
+            else
+                console.log("saving user to db");
+        });
+
+        return res.redirect('/myclasses');
     });
 
-
-    res.redirect('/myclasses');
 });
+
 
 app.delete('/deleteClass/:id', function(req, res) {
-    //console.log(User);
-    /*User.remove({ '_id' : classToDelete }, function(err) {
-        res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
-    });*/
-    //console.log(req.user);
-    req.user.classes.forEach(function(element){
-       if(element._id == req.params.id){
-           //console.log("test");
-           req.user.classes.splice(req.user.classes.indexOf(element._id), 1);
+    //go through list of classes
+    for(var i = 0;i<req.user.classes.length ; i++){
+       //check if the current class is the one to delete
+       if(req.user.classes[i]._id == req.params.id){
+
+           //splice it out of the array and save to db
+           req.user.classes.splice(i, 1);
+           req.user.save(function(err){
+               if(err) return res.send(err);
+               return res.send(null);
+           });
        }
-    });
-    req.user.save(function(err){
-        if(err) return res.send(err);
-        return res.send(null);
-    });
+    }
+
 
 
 });
-
-
-
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -276,98 +325,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
-
-function checkAvailable(req) {
-    var crn = req.crn;
-    var number = req.number;
-    console.log(crn);
-    console.log(number);
-
-    var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "https://ssb.cc.binghamton.edu/banner/bwskfcls.P_GetCrse_Advanced",
-        "method": "POST",
-        "headers": {
-            "origin": "https://ssb.cc.binghamton.edu",
-            "x-devtools-emulate-network-conditions-client-id": "9871bbf6-6719-4f39-b45e-3925370e2b3c",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
-            "content-type": "application/x-www-form-urlencoded",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "referer": "https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "en-US,en;q=0.8",
-            "cookie": "TESTID=set; _ga=GA1.2.239373860.1486495600; IDMSESSID=B00634552; SESSID=M003RFVFNjQ5MzUx; _ga=GA1.2.239373860.1486495600; IDMSESSID=B00634552"
-        },
-        "data": {
-            "SUB_BTN": "Section Search",
-            "begin_ap": "a",
-            "begin_hh": "0",
-            "begin_mi": "0",
-            "crn": "dummy",
-            "end_ap": "a",
-            "end_hh": "0",
-            "end_mi": "0",
-            "path": "1",
-            "rsts": "dummy",
-            "sc_sel_attr": [
-                "dummy",
-                "%"
-            ],
-            "sel_attr": [
-                "dummy",
-                "%"
-            ],
-            "sel_camp": "dummy",
-            "sel_crse": number,
-            "sel_day": "dummy",
-            "sel_from_cred": "",
-            "sel_insm": [
-                "dummy",
-                "%"
-            ],
-            "sel_instr": "dummy",
-            "sel_levl": [
-                "dummy",
-                "%"
-            ],
-            "sel_ptrm": [
-                "dummy",
-                "%"
-            ],
-            "sel_schd": [
-                "dummy",
-                "%"
-            ],
-            "sel_sess": "dummy",
-            "sel_subj": [
-                "dummy",
-                "CS"
-            ],
-            "sel_title": "",
-            "sel_to_cred": "",
-            "term_in": "201720"
-
-
-        }
-    }
-    /*console.log("checking availability of class");
-    var re = new RegExp(crn + '(.*?\n){0,15} ', 'gm'); //hopefully this works?
-    var output = re.exec(response);
-
-    window.write(output);
-    var re = new RegExp('(\d+?)<\/td>', 'gm');
-    var answer = re.exec(output);
-
-    var value = answer[5];*/
-}
-
-
-
 
 
 module.exports = app;

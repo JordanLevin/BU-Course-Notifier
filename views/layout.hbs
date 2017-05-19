@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html>
   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
       <link rel='stylesheet' href='/stylesheets/style.css' />
+      <link rel='stylesheet' href='/semantic/dist/semantic.min.css'>
       <script src="https://code.jquery.com/jquery-3.1.1.js"
               integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
               crossorigin="anonymous"></script>
-      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+      <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
+    -->
       <title>{{title}}</title>
   </head>
   <body>
-
-  <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="ui grey inverted menu" style="margin: 1em 1em 1em 1em">
+      <a class="item" href="/">Home</a>
+      <a class="item" href="/home">Account Info</a>
+      <a class="item" href="/myclasses">My Classes</a>
+      <div class="right menu">
+          {{#if user}}
+                  <form action="/signout" method="get" style="padding:.5em .5em .5em .5em">
+                      <button type="submit" class="ui button">Logout</button>
+                  </form>
+          {{/if}}
+      </div>
+  </div>
+  <!--<nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                   <span class="sr-only">Toggle navigation</span>
@@ -25,33 +40,31 @@
               <a class="navbar-brand" href="/">BU Brain Notifier</a>
           </div>
 
-          <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse navbar-left" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
 
-                  <!--<li class="active"><a href="/">Home</a></li>-->
 
                   <li class="inactive"><a href="/home">My Account</a></li>
                   <li class="inactive"><a href="/myclasses">My Classes</a></li>
 
               </ul>
-          </div><!-- /.navbar-collapse -->
+          </div>
           <div class="nav navbar-nav navbar-right">
               <ul class="nav navbar-nav">
                   {{#if user}}
                       <li class="inactive">
-                          <form action="/signout" method="get">
-                              <button type="submit" class="btn btn-default navbar-btn ">Logout</button>
+                          <form action="/signout" method="get" style="padding-right:1em">
+                              <button type="submit" class="btn btn-default navbar-btn">Logout</button>
                           </form>
                       </li>
                   {{/if}}
               </ul>
           </div>
-      </div><!-- /.container-fluid -->
+      </div>
   </nav>
   <br>
   <br>
-  <br>
+  <br>-->
     {{{body}}}
   </body>
 </html>
