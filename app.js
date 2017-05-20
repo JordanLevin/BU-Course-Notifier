@@ -61,6 +61,58 @@ app.use(passport.initialize());
 app.use(passport.session());
 //for sessions and stuff ---------------------------
 
+
+var updateNumbers = function(){
+    User.find({}, function(err, users){
+        var check = [];
+        users.forEach(function(user){
+
+            if (user.classes) {
+                //console.log(user.classes[0].crn);
+                user.classes.forEach(function (c) {
+                    check.push(function (callback) {
+                        var results = [];
+                        request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + c.crn, function (error, response, body) {
+                            var re = new RegExp('dddefault">\\d+', 'g');
+                            var nums = new RegExp('\\d\\d');
+                            var xArray;
+                            var first = true;
+                            while (xArray = re.exec(body)) {
+                                var test = xArray.toString().split(",")[0].split(">")[1];
+                                if (!first)
+                                    results.push(test);
+                                first = false;
+                            }
+                            callback(null, results);
+                        });
+                    });
+                });
+            }
+        });
+        async.parallel(check, function (err, results) {
+            var i = 0;
+            users.forEach(function (user) {
+                if(user.classes) {
+                    user.classes.forEach(function (c) {
+                        c.spots = results[i][0];
+                        console.log(results[i][0]);
+                        i++;
+                    });
+                }
+                user.save(function (err) {
+                    if (err) {
+                        console.log('Error updating class: ' + err);
+                        throw err;
+                    }
+                    console.log('Classes successfully updated');
+                });
+            });
+        });
+    });
+}
+//500000
+setInterval(updateNumbers, 10000);
+
 passport.serializeUser(function(user, done){
     done(null, user._id);
 });
@@ -208,9 +260,9 @@ app.get('/home', isAuthenticated, function(req, res){
 });
 
 
-//test stuff for checking classes --------------------------------------------------------------------------------------
+//stuff for checking classes --------------------------------------------------------------------------------------
 app.get('/myclasses', isAuthenticated, function(req, res){
-    check = [];
+    var check = [];
     req.user.classes.forEach(function(c){
         check.push(function(callback) {
             var results = [];
@@ -239,13 +291,12 @@ app.get('/myclasses', isAuthenticated, function(req, res){
         res.render('myclasses', {user: req.user});
     });
 
+    res.render('myclasses', {user: req.user});
+
 
 });
-//test stuff for checking classes --------------------------------------------------------------------------------------
+//stuff for checking classes --------------------------------------------------------------------------------------
 
-function updateNumbers(){
-
-}
 
 function notifyUsers(){
     var transporter = nodemailer.createTransport({
