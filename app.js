@@ -94,8 +94,15 @@ var updateNumbers = function(){
             users.forEach(function (user) {
                 if(user.classes) {
                     user.classes.forEach(function (c) {
+                        c.previousSpots = c.spots;
                         c.spots = results[i][0];
-                        console.log(results[i][0]);
+                        //debugging code
+                        //notifyUsers(user.email, c.spots, c.previousSpots);
+
+                        //TODO check to see if user has email notifications enabled
+                        if(c.spots != c.previousSpots){
+                            notifyUsers(user.email, c.spots, c.previousSpots);
+                        }
                         i++;
                     });
                 }
@@ -110,8 +117,33 @@ var updateNumbers = function(){
         });
     });
 }
-//500000
-setInterval(updateNumbers, 10000);
+//run update numbers every few minutes
+setInterval(updateNumbers, 500000);
+
+//send mail to a certain email with info about the class and spots given
+function notifyUsers(email, spots, prev){
+    console.log(email);
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'webstuff987@gmail.com', // Your email id
+            pass: 'passwordrequirementssuck' // Your password
+        }
+    });
+    var options = {
+        from: '"test notification" <webstuff987@gmail.com>',
+        to: email,
+        subject: 'changes in space available in a class',
+        text: 'the amount of space in some class has changed from ' + prev + ' to ' + spots
+    }
+
+    transporter.sendMail(options, function(error, info){
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+    });
+}
 
 passport.serializeUser(function(user, done){
     done(null, user._id);
@@ -207,7 +239,8 @@ passport.use('signup', new LocalStrategy({
         // the method in the next tick of the event loop
         process.nextTick(findOrCreateUser);
     }));
-// if the user is authenticated
+
+// check if the user is authenticated
 var isAuthenticated = function (req, res, next) {
     if (req.isAuthenticated())
         return next();
@@ -284,8 +317,8 @@ app.get('/myclasses', isAuthenticated, function(req, res){
     async.parallel(check, function(err, results){
         var i = 0;
         req.user.classes.forEach(function(c){
+            c.previousSpots = c.spots;
             c.spots = results[i][0];
-            //console.log(results[i][0]);
             i++;
         });
         res.render('myclasses', {user: req.user});
@@ -295,21 +328,9 @@ app.get('/myclasses', isAuthenticated, function(req, res){
 
 
 });
-//stuff for checking classes --------------------------------------------------------------------------------------
 
 
-function notifyUsers(){
-    var transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'webstuff987@gmail.com', // Your email id
-            pass: 'passwordrequirementssuck' // Your password
-        }
-    });
-}
-
-
-
+//add a new class to the list of classes being tracked
 app.post('/addclass', function(req, res){
     valid = true;
     request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + req.body.crn, function (error, response, body) {
@@ -325,7 +346,7 @@ app.post('/addclass', function(req, res){
         console.log(req.body);
         newClass.crn = req.body.crn;
         newClass.name = req.body.name;
-        newClass.spots = 0;
+        newClass.spots = -10;
         req.user.classes.push(newClass);
         req.user.save(function(err){
             if(err)

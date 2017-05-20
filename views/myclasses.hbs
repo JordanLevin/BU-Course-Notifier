@@ -6,15 +6,15 @@
 </script>
 
 <div class="ui grid">
-    <div class="six wide left floated column" style="padding: 5em 5em 5em 10em;">
+    <div class="four wide column" style="padding: 1em 1em 1em 1em;">
         <h2> Enter a class name and crn </h2>
         <form class = "ui large form "action="/addclass" method="post">
-            <input name="name" type="text" style = "margin-bottom:2em" placeholder="Enter class name"></input>
-            <input name="crn" type="text" style = "margin-bottom:1em" placeholder="Enter class CRN"></input>
+            <input name="name" type="text" style = "margin-bottom:2em" placeholder="Enter class name">
+            <input name="crn" type="text" style = "margin-bottom:1em" placeholder="Enter class CRN">
             <button type="submit" id="btnAddClass" class="ui button">Submit</button>
         </form>
     </div>
-    <div class="six wide left floated column" style="padding: 5em 5em 5em 5em;">
+    <div class="four wide column" style="padding: 1em 1em 1em 1em;">
         <h2> Classes being monitored </h2>
         <div id="classList">
             <table class="ui celled table" style="padding-right: 1em">

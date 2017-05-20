@@ -3,7 +3,8 @@ var mongoose = require('mongoose');
 var classesSchema = new mongoose.Schema({
     crn: String,
     name: String,
-    spots: Number
+    spots: Number,
+    previousSpots: Number
 
 });
 
