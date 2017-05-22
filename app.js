@@ -65,11 +65,9 @@ app.use(passport.session());
 var updateNumbers = function(){
     User.find({}, function(err, users){
         var check = [];
-        users.forEach(function(user){
-
+        users.forEach(function(user){ //go through every user in the db
             if (user.classes) {
-                //console.log(user.classes[0].crn);
-                user.classes.forEach(function (c) {
+                user.classes.forEach(function (c) { //go through every class in this user
                     check.push(function (callback) {
                         var results = [];
                         request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + c.crn, function (error, response, body) {
@@ -94,13 +92,15 @@ var updateNumbers = function(){
             users.forEach(function (user) {
                 if(user.classes) {
                     user.classes.forEach(function (c) {
+                        if(c.previousSpots != c.spots){
+                            c.spotHistory.push(new Date(), c.spots);
+                        }
                         c.previousSpots = c.spots;
                         c.spots = results[i][0];
-                        //debugging code
-                        //notifyUsers(user.email, c.spots, c.previousSpots);
+
 
                         //TODO check to see if user has email notifications enabled
-                        if(c.spots != c.previousSpots){
+                        if(c.spots !== c.previousSpots){
                             notifyUsers(user.email, c.spots, c.previousSpots);
                         }
                         i++;
@@ -317,11 +317,14 @@ app.get('/myclasses', isAuthenticated, function(req, res){
     async.parallel(check, function(err, results){
         var i = 0;
         req.user.classes.forEach(function(c){
+            if(c.previousSpots != c.spots){
+                c.spotHistory.push(new Date(), c.spots);
+            }
             c.previousSpots = c.spots;
             c.spots = results[i][0];
             i++;
         });
-        res.render('myclasses', {user: req.user});
+        //res.render('myclasses', {user: req.user});
     });
 
     res.render('myclasses', {user: req.user});
@@ -347,6 +350,7 @@ app.post('/addclass', function(req, res){
         newClass.crn = req.body.crn;
         newClass.name = req.body.name;
         newClass.spots = -10;
+        newClass.spotHistory = []
         req.user.classes.push(newClass);
         req.user.save(function(err){
             if(err)

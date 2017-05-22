@@ -4,7 +4,8 @@ var classesSchema = new mongoose.Schema({
     crn: String,
     name: String,
     spots: Number,
-    previousSpots: Number
+    previousSpots: Number,
+    spotHistory: [Date, Number]
 
 });
 
@@ -19,7 +20,6 @@ var userSchema = new mongoose.Schema({
 
 });
 
-//var User = mongoose.model('User2', userSchema);
 module.exports = {
     class: mongoose.model('classes', classesSchema),
     User: mongoose.model('User2', userSchema)
