@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
+
       <meta charset="utf-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-      <link rel='stylesheet' href='/stylesheets/style.css' />
       <link rel='stylesheet' href='/semantic/dist/semantic.min.css'>
+      <link rel='stylesheet' href='/stylesheets/style.css' />
       <script src="https://code.jquery.com/jquery-3.1.1.js"
               integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
               crossorigin="anonymous"></script>
@@ -15,8 +16,9 @@
     -->
       <title>{{title}}</title>
   </head>
+
   <body>
-  <div class="ui stackable inverted menu" style="margin: 1em 1em 1em 1em">
+  <div class="ui stackable top fixed inverted menu">
       <div class="item">
           <img src="/images/logo.png">
       </div>
@@ -24,9 +26,9 @@
       <a class="item" href="/myclasses">My Classes</a>
       <div class="right menu">
           {{#if user}}
-                  <form action="/signout" method="get" style="padding:.5em .5em .5em .5em">
-                      <button type="submit" class="ui button">Logout</button>
-                  </form>
+              <form action="/signout" method="get" style="padding:.5em .5em .5em .5em">
+                  <button type="submit" class="ui button">Logout</button>
+              </form>
           {{/if}}
       </div>
   </div>

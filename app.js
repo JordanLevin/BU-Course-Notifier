@@ -99,9 +99,10 @@ var updateNumbers = function(){
                         c.spots = results[i][0];
 
 
-                        //TODO check to see if user has email notifications enabled
-                        if(c.spots !== c.previousSpots){
-                            notifyUsers(user.email, c.spots, c.previousSpots);
+                        if(user.notifications) {
+                            if (c.spots !== c.previousSpots) {
+                                notifyUsers(user.email, c.name, c.spots, c.previousSpots);
+                            }
                         }
                         i++;
                     });
@@ -121,7 +122,7 @@ var updateNumbers = function(){
 setInterval(updateNumbers, 500000);
 
 //send mail to a certain email with info about the class and spots given
-function notifyUsers(email, spots, prev){
+function notifyUsers(email, name, spots, prev){
     console.log(email);
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -131,10 +132,10 @@ function notifyUsers(email, spots, prev){
         }
     });
     var options = {
-        from: '"test notification" <webstuff987@gmail.com>',
+        from: '"BU class notifier" <webstuff987@gmail.com>',
         to: email,
-        subject: 'changes in space available in a class',
-        text: 'the amount of space in some class has changed from ' + prev + ' to ' + spots
+        subject: 'The number of spots available in ' + name + ' has changed',
+        text: 'the number of spots in '+ name +' has changed from ' + prev + ' to ' + spots
     }
 
     transporter.sendMail(options, function(error, info){
@@ -317,17 +318,22 @@ app.get('/myclasses', isAuthenticated, function(req, res){
     async.parallel(check, function(err, results){
         var i = 0;
         req.user.classes.forEach(function(c){
+            console.log(c.name);
+
             if(c.previousSpots != c.spots){
                 c.spotHistory.push(new Date(), c.spots);
             }
             c.previousSpots = c.spots;
             c.spots = results[i][0];
             i++;
+            console.log(c.spots);
         });
-        //res.render('myclasses', {user: req.user});
+            res.render('myclasses', {user: req.user});
     });
 
-    res.render('myclasses', {user: req.user});
+
+
+
 
 
 });
@@ -357,9 +363,10 @@ app.post('/addclass', function(req, res){
                 console.log(err);
             else
                 console.log("saving user to db");
+            return res.redirect('/myclasses');
         });
 
-        return res.redirect('/myclasses');
+
     });
 
 });
