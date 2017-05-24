@@ -167,7 +167,7 @@ passport.use('login', new LocalStrategy({
 },
     function(req, username, password, done){
     //check if user is in db
-        User.findOne({'username' : username}, function(err, user){
+        User.findOne({'username' : username.toLowerCase()}, function(err, user){
            if(err)
                return done(err);
            //user doesnt exist
@@ -216,7 +216,7 @@ passport.use('signup', new LocalStrategy({
                     // create the user
                     var newUser = new User();
                     // set the user's local credentials
-                    newUser.username = username;
+                    newUser.username = username.toLowerCase();
                     newUser.password = createHash(password);
                     newUser.email = req.body.email;
                     newUser.firstName = req.body.firstName;
@@ -330,10 +330,6 @@ app.get('/myclasses', isAuthenticated, function(req, res){
         });
             res.render('myclasses', {user: req.user});
     });
-
-
-
-
 
 
 });
