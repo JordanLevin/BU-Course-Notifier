@@ -1,37 +1,36 @@
 <div class="ui grid">
     <div class="four wide column"></div>
-    <table class="ui very basic table six wide column form" style="margin: 2em auto auto auto">
-    <form class="ui large form" action="/updateinfo" method="post">
-        <tr>
-            <td>Name: </td>
-            <td>
-                <input class="ui input" name="firstName" type="text" value="{{user.firstName}}">
-            </td>
-        </tr>
-        <tr>
-            <td>Username: </td>
-            <td>{{user.username}}</td>
-        </tr>
-        <tr>
-            <td>Email:</td>
-            <td>{{user.email}}</td>
-        </tr>
-        <tr>
-            <td>Recieve emails:</td>
-            <td>
-                <div class="ui slider checkbox">
+    <form class="ui large six wide column form" style="margin: 2em auto auto auto" action="/updateinfo" method="post">
+        <div class="field">
+            <label>Name:</label>
+            <input type="text" name="firstName" value="{{user.firstName}}">
+        </div>
+        <h6 class="ui dividing header"></h6>
+        <div class="field">
+            <label>Username:</label>
+            <input type="text" name="username" value="{{user.username}}">
+        </div>
+        <h6 class="ui dividing header"></h6>
+        <div class="field">
+            <label>Email:</label>
+            <input type="text" name="email" value="{{user.email}}">
+        </div>
+        <h6 class="ui dividing header"></h6>
+        <div class="field">
+            <label>Recieve emails:</label>
+            <div class="ui slider checkbox">
+                {{#if user.notifications}}
+                    <input type="checkbox" name="notifications" checked>
+                {{else}}
                     <input type="checkbox" name="notifications">
-                    <label></label>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td><button class="ui button" type="submit">Save Changes</button></td>
-            <td></td>
-
-        </tr>
+                {{/if}}
+                <label></label>
+            </div>
+        </div>
+        <br>
+            <button class="ui button" type="submit">Save Changes</button>
     </form>
-    </table>
     <div class="four wide column"></div>
 </div>
+
+<!--size="25" style="margin-right: 10em; float: right;"-->

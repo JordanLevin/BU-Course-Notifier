@@ -293,6 +293,28 @@ app.get('/home', isAuthenticated, function(req, res){
     res.render('home', { user: req.user });
 });
 
+app.post('/updateinfo', isAuthenticated, function(req, res){
+   req.user.firstName = req.body.firstName;
+   req.user.email = req.body.email;
+   req.user.username = req.body.username;
+   if(req.body.notifications == 'on')
+       req.user.notifications = true;
+   else
+       req.user.notifications = false;
+
+   req.user.save(function (err) {
+       if(err){
+           console.log('failed to save user data');
+           res.redirect('home'/*, {message: 'error saving settings'}*/);
+       }
+       else{
+           console.log('user data saved!');
+           res.redirect('home'/*, {message: 'Settings successfully updates'}*/);
+       }
+
+   })
+});
+
 
 //stuff for checking classes --------------------------------------------------------------------------------------
 app.get('/myclasses', isAuthenticated, function(req, res){
