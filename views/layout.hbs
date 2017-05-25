@@ -11,23 +11,56 @@
       <script src="https://code.jquery.com/jquery-3.1.1.js"
               integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
               crossorigin="anonymous"></script>
-      <!--<script src="/semantic/dist/semantic.min.js"></script>-->
+      <script src="/semantic/dist/semantic.min.js"></script>
+      <script>
+          $(function() {
+              $('#toggle-sidebar').click(function() {
+                  $('.menu.sidebar').sidebar('toggle');
+              });
+          });
+      </script>
+
       <title>{{title}}</title>
   </head>
-
   <body>
-  <div class="ui stackable top fixed inverted menu">
-      <div class="item">
-          <img src="/images/logo.png">
+
+  <div class="show-mobile">
+      <div class="ui top fixed inverted menu">
+          <a id="toggle-sidebar" class="item">
+              <i class="sidebar icon"></i>
+              Menu
+          </a>
       </div>
-      <a class="item" href="/home">Account Info</a>
-      <a class="item" href="/myclasses">My Classes</a>
-      <div class="right menu">
-          {{#if user}}
-              <a class="item" href="/signout">Logout</a>
-          {{/if}}
+      <div class="ui left sidebar vertical inverted menu">
+          <div class="item">
+              <img src="/images/logo.png">
+          </div>
+          <a class="item" href="/home">Account Info</a>
+          <a class="item" href="/myclasses">My Classes</a>
+          <div class="right menu">
+              {{#if user}}
+                  <a class="item" href="/signout">Logout</a>
+              {{/if}}
+          </div>
       </div>
   </div>
+
+  <div class="hide-mobile">
+      <div class="ui stackable top fixed inverted menu">
+          <div class="item">
+              <img src="/images/logo.png">
+          </div>
+          <a class="item" href="/home">Account Info</a>
+          <a class="item" href="/myclasses">My Classes</a>
+          <div class="right menu">
+              {{#if user}}
+                  <a class="item" href="/signout">Logout</a>
+              {{/if}}
+          </div>
+      </div>
+  </div>
+  <div class="pusher">
     {{{body}}}
+  </div>
   </body>
 </html>
