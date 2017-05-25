@@ -11,10 +11,10 @@
         <form class = "ui large form "action="/addclass" method="post">
             <input name="name" type="text" style = "margin-bottom:2em" placeholder="Enter class name">
             <input name="crn" type="text" style = "margin-bottom:2em" placeholder="Enter class CRN">
-            <select class="ui dropdown" style="margin-bottom:1em">
-                <option value="">Semester</option>
-                <option value="1">Spring 2017</option>
-                <option value="0">Fall 2017</option>
+            <select name="semester" class="ui dropdown" style="margin-bottom:1em">
+                <option value="">Pick a semester</option>
+                <option value="201720">Spring 2017</option>
+                <option value="201790">Fall 2017</option>
             </select>
             <button type="submit" id="btnAddClass" class="ui button">Submit</button>
         </form>

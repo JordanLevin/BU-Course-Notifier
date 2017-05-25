@@ -1,9 +1,12 @@
 <div class="ui grid">
     <div class="four wide column"></div>
-    <table class="ui very basic table six wide column" style="margin: 2em auto auto auto">
+    <table class="ui very basic table six wide column form" style="margin: 2em auto auto auto">
+    <form class="ui large form" action="/updateinfo" method="post">
         <tr>
             <td>Name: </td>
-            <td>{{user.firstName}}</td>
+            <td>
+                <input class="ui input" name="firstName" type="text" value="{{user.firstName}}">
+            </td>
         </tr>
         <tr>
             <td>Username: </td>
@@ -28,6 +31,7 @@
             <td></td>
 
         </tr>
+    </form>
     </table>
     <div class="four wide column"></div>
 </div>

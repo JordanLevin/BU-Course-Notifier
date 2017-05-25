@@ -300,7 +300,7 @@ app.get('/myclasses', isAuthenticated, function(req, res){
     req.user.classes.forEach(function(c){
         check.push(function(callback) {
             var results = [];
-            request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + c.crn, function (error, response, body) {
+            request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=' + c.semester + '&crn_in=' + c.crn, function (error, response, body) {
                 var re = new RegExp('dddefault">\\d+', 'g');
                 var nums = new RegExp('\\d\\d');
                 var xArray;
@@ -337,8 +337,9 @@ app.get('/myclasses', isAuthenticated, function(req, res){
 
 //add a new class to the list of classes being tracked
 app.post('/addclass', function(req, res){
+    console.log(req.body);
     valid = true;
-    request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=201790&crn_in=' + req.body.crn, function (error, response, body) {
+    request('http://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_detail_sched?term_in=' + req.body.semester + '&crn_in=' + req.body.crn, function (error, response, body) {
         var re = new RegExp('No detailed class information found');
         if(re.exec(body)){
             valid = false;
@@ -348,11 +349,11 @@ app.post('/addclass', function(req, res){
             return res.redirect('/myclasses');
         }
         var newClass = new Class();
-        console.log(req.body);
+        newClass.semester = req.body.semester;
         newClass.crn = req.body.crn;
         newClass.name = req.body.name;
         newClass.spots = -10;
-        newClass.spotHistory = []
+        newClass.spotHistory = [];
         req.user.classes.push(newClass);
         req.user.save(function(err){
             if(err)
