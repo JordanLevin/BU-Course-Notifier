@@ -317,6 +317,18 @@ app.post('/updateinfo', isAuthenticated, function(req, res){
 
 
 //stuff for checking classes --------------------------------------------------------------------------------------
+app.get('/myclasses/:selectedClass', isAuthenticated, function(req, res){
+            for(var c in req.user.classes){
+                if(c.name == req.params.selectedClass){
+                    return res.render('myclasses', {user: req.user, selectedClass: c});
+                }
+            }
+            res.render('myclasses', {user: req.user, selectedClass: req.user.classes[0]});
+
+
+
+});
+
 app.get('/myclasses', isAuthenticated, function(req, res){
     var check = [];
     req.user.classes.forEach(function(c){
@@ -343,7 +355,7 @@ app.get('/myclasses', isAuthenticated, function(req, res){
             console.log(c.name);
 
             if(c.previousSpots != c.spots){
-                c.spotHistory.push(new Date(), c.spots);
+                c.spotHistory.push(c.spots); //new Date(),
             }
             c.previousSpots = c.spots;
             c.spots = results[i][0];

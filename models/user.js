@@ -6,7 +6,7 @@ var classesSchema = new mongoose.Schema({
     spots: Number,
     previousSpots: Number,
     semester: Number,
-    spotHistory: [Date, Number]
+    spotHistory: [Number]
 
 });
 
