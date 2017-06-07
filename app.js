@@ -89,14 +89,14 @@ var updateNumbers = function(){
         });
         async.parallel(check, function (err, results) {
             var i = 0;
-            users.forEach(function (user) {
-                if(user.classes) {
-                    user.classes.forEach(function (c) {
-                        if(c.previousSpots != c.spots){
-                            c.spotHistory.push(new Date(), c.spots);
-                        }
-                        c.previousSpots = c.spots;
-                        c.spots = results[i][0];
+            users.forEach(function (user, userIndex) {
+                if(users[userIndex].classes) {
+                    users[userIndex].classes.forEach(function (c, classIndex) {
+                        //if(c.previousSpots != c.spots){
+                            //c.spotHistory.push(new Date(), c.spots);
+                        //}
+                        users[userIndex].classes[classIndex].previousSpots = c.spots;
+                        users[userIndex].classes[classIndex].spots = results[i][0];
 
 
                         if(user.notifications) {
@@ -105,15 +105,15 @@ var updateNumbers = function(){
                             }
                         }
                         i++;
+                        users[userIndex].save(function (err) {
+                            if (err) {
+                                console.log('Error updating class: ' + err);
+                                throw err;
+                            }
+                            console.log('Classes successfully updated');
+                        });
                     });
                 }
-                user.save(function (err) {
-                    if (err) {
-                        console.log('Error updating class: ' + err);
-                        throw err;
-                    }
-                    console.log('Classes successfully updated');
-                });
             });
         });
     });
@@ -351,18 +351,25 @@ app.get('/myclasses', isAuthenticated, function(req, res){
     });
     async.parallel(check, function(err, results){
         var i = 0;
-        req.user.classes.forEach(function(c){
+        req.user.classes.forEach(function(c, index){
             console.log(c.name);
 
-            if(c.previousSpots != c.spots){
-                c.spotHistory.push(c.spots); //new Date(),
-            }
-            c.previousSpots = c.spots;
-            c.spots = results[i][0];
+            //if(c.previousSpots != c.spots){
+                //c.spotHistory.push(c.spots); //new Date(),
+            //}
+            req.user.classes[index].previousSpots = c.spots;
+            req.user.classes[index].spots = results[i][0];
             i++;
             console.log(c.spots);
         });
-            res.render('myclasses', {user: req.user});
+        req.user.save(function (err) {
+            if (err) {
+                console.log('Error updating class: ' + err);
+                throw err;
+            }
+            console.log('Classes successfully updated');
+        });
+        res.render('myclasses', {user: req.user});
     });
 
 
