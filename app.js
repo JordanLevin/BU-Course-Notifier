@@ -95,7 +95,6 @@ var updateNumbers = function(){
                         //if(c.previousSpots != c.spots){
                             //c.spotHistory.push(new Date(), c.spots);
                         //}
-                        users[userIndex].classes[classIndex].previousSpots = c.spots;
                         users[userIndex].classes[classIndex].spots = results[i][0];
 
 
@@ -104,6 +103,7 @@ var updateNumbers = function(){
                                 notifyUsers(user.email, c.name, c.spots, c.previousSpots);
                             }
                         }
+                        users[userIndex].classes[classIndex].previousSpots = c.spots;
                         i++;
                         users[userIndex].save(function (err) {
                             if (err) {
